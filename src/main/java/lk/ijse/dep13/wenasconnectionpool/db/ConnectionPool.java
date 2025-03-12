@@ -13,20 +13,21 @@ public class ConnectionPool {
     private final ConcurrentHashMap<UUID, Connection> MAIN_POOL = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, Connection> CONSUMER_POOL = new ConcurrentHashMap<>();
     private int poolSize;
-    private static final Properties PROPERTIES = new Properties();
+    private static Properties properties;
 
     static {
         try {
-            PROPERTIES.load(ConnectionPool.class.getResourceAsStream("application.properties"));
+            properties = new Properties();
+            properties.load(ConnectionPool.class.getResourceAsStream("/application.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public ConnectionPool() {
-        this(PROPERTIES.getProperty("app.pool.size") == null
+        this(properties.getProperty("app.pool.size") == null
                 ? DEFAULT_POOL_SIZE
-                : Integer.valueOf(PROPERTIES.getProperty("app.pool.size").trim()));
+                : Integer.valueOf(properties.getProperty("app.pool.size").trim()));
     }
 
     public ConnectionPool(int poolSize) {
@@ -39,16 +40,18 @@ public class ConnectionPool {
     }
 
     private void initializer() throws SQLException, ClassNotFoundException {
-        String database = PROPERTIES.getProperty("app.db.database");
-        String host = PROPERTIES.getProperty("app.db.host");
-        String port = PROPERTIES.getProperty("app.db.port");
-        String user = PROPERTIES.getProperty("app.db.user");
-        String password = PROPERTIES.getProperty("app.db.password");
+        String database = properties.getProperty("app.db.database");
+        String host = properties.getProperty("app.db.host");
+        String port = properties.getProperty("app.db.port");
+        String user = properties.getProperty("app.db.user");
+        String password = properties.getProperty("app.db.password");
 
         Class.forName("com.mysql.cj.jdbc.Driver");
 
+        System.out.println("Connecting to database: " + database);
+        System.out.println("Connecting to host: " + host);
         for (int i = 0; i < this.poolSize; i++) {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://%s:%s/$s".formatted(host, port, database), user, password);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://%s:%s/%s".formatted(host, port, database), user, password);
             MAIN_POOL.put(UUID.randomUUID(), connection);
         }
     }

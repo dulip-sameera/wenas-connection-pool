@@ -22,14 +22,16 @@ public class ReleaseConnectionServlet extends HttpServlet {
             return;
         }
 
-        Matcher matcher = Pattern.compile("^/(?<id>[^/])/?(?<rest>.*)$").matcher(req.getPathInfo());
-        if (matcher.find()) {
+        Matcher matcher = Pattern.compile("^/(?<id>[^/]+)/?(?<rest>.*)$").matcher(req.getPathInfo());
+        if (!matcher.find()) {
+            System.out.println("find");
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
         String rest = matcher.group("rest");
         if (!rest.isBlank()) {
+            System.out.println("rest");
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
