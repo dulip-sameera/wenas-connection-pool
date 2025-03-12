@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,10 +33,10 @@ public class ReleaseConnectionServlet extends HttpServlet {
         }
 
         String id = matcher.group("id");
-        releaseConnection(Integer.valueOf(id.trim()), resp);
+        releaseConnection(id.trim(), resp);
     }
 
-    private void releaseConnection(Integer id, HttpServletResponse res) {
+    private void releaseConnection(String id, HttpServletResponse res) {
         System.out.println("ReleaseConnectionServlet");
     }
 
